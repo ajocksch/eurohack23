@@ -1,6 +1,6 @@
-===================
-CSCS SuperComputers
-===================
+==================
+CSCS Supercomputer
+==================
 
 To get your password for the account, please contact Andreas Jocksch on 
 `Slack <https://cscsgpuhackathon2022.slack.com>`_.
@@ -117,32 +117,66 @@ are the Cray, Gnu, Nvidia and Intel compilers.
     - Nvidia: ``module swap PrgEnv-cray PrgEnv-nvidia``
     - Intel: ``module swap PrgEnv-cray PrgEnv-intel``
 
-Finally, code will only be compiled for GPUs if the following module is loaded:
+The Cray programming environment provides compilation wrapper scripts that
+will automatically set cpu arch flags (Intel Haswell) and add header files and
+libraries that you have loaded with the module command:
 
-```
-module load craype-accel-nvidia60
-```
+- The wrapper command for Fortran codes is ``ftn``
+- The wrapper command for C++ codes is ``CC``
+- The wrapper command for C codes is ``cc``
 
-NVIDIA Pascal P100
-------------------
+To get the version of the compiler used by the wrapper, run
+``CC --version -craype-verbose``:
+
+   .. note:: 
+      - PrgEnv-Cray: ``clang++ -march=haswell # Cray clang version 14.0.0``
+      - PrgEnv-gnu: ``g++ -march=core-avx2 # g++ (GCC) 11.2.0``
+      - PrgEnv-nvidia: ``nvc++ -tp=haswell # nvc++ 21.3-0 LLVM``
+      - PrgEnv-intel: ``icpx -xCORE-AVX2 # Intel(R) oneAPI DPC++/C++ Compiler 2021.3.0``
+
+    .. warning::
+       The wrappers (ftn, cc or CC) are mandatory to compile MPI codes: there are no `mpicc` and the likes.
+
+- To compile a single file (fortran, c or c++) MPI code, run:
+
+   .. note:: 
+      - ftn -O2 mpi.f90 -o myexe
+      - cc -O2 mpi.c -o myexe
+      - CC -O2 mpi.cpp -o myexe
+
+- For more information about the compilers, please check our user portal:
+
+   .. note:: 
+      - PrgEnv-Cray: https://user.cscs.ch/computing/compilation/cray
+      - PrgEnv-gnu: https://user.cscs.ch/computing/compilation/gnu/
+      - PrgEnv-nvidia: https://user.cscs.ch/computing/compilation/nvidia/
+      - PrgEnv-intel: https://user.cscs.ch/computing/compilation/intel/
+
+
+Piz Daint GPU
+-------------
 
 Each compute node of Piz Daint has 1 NVIDIA Pascal ``P100`` gpu:
 
-.. table:: 
-   :align: center
-   :class: tiny
+- To compile cuda codes on Piz Daint, run:
 
-   ================  ========  ======  ======  ==========
-   1 compute node    *thread*  *warp*   *sm*    *device* 
-   = 1 P100 gpu                                                  
-   ----------------  --------  ------  ------  ----------
-   *threads*                1      32    2048      114688
-   *warps*                  x       1      64        3584
-   *sms*                    x       x       1          56
-   *GPU*                    x       x       x   P100-PCIE
-   ================  ========  ======  ======  ==========
+   .. note:: 
+      module load craype-accel-nvidia60; 
+      nvcc \-\-version
 
-For comparison, this table shows some performance metrics between 3 NVIDIA gpus:
+It will load the default nvcc compiler (cudatoolkit/11.0.2) and Cray library for
+gpu (cray-libsci_acc/20.10.1). If you need a more recent version, run instead:
+
+   .. note:: 
+      module load nvhpc-nompi/22.2; 
+      nvcc \-\-version
+
+If you need another version, please contact ``@jg`` on Slack.
+
+NVIDIA Pascal P100
+``````````````````
+For comparison, this table shows some performance metrics between the P100 on
+Piz Daint compute nodes and 2 more recent NVIDIA gpus:
 
 .. table::
    :align: center
@@ -158,12 +192,68 @@ For comparison, this table shows some performance metrics between 3 NVIDIA gpus:
    *nvcc -arch=sm_*        60        70        80
    ================  ========  ========  ========
 
+and some details about the GPU configuration:
+
+.. table:: 
+   :align: center
+   :class: tiny
+
+   ================  ========  ======  ======  ==========
+   1 compute node    *thread*  *warp*   *sm*    *device* 
+   = 1 P100 gpu                                                  
+   ----------------  --------  ------  ------  ----------
+   *threads*                1      32    2048      114688
+   *warps*                  x       1      64        3584
+   *sms*                    x       x       1          56
+   *GPU*                    x       x       x   P100-PCIE
+   ================  ========  ======  ======  ==========
+
+Building your code with EasyBuild or Spack
+------------------------------------------
+
+It is possible to use either `EasyBuild
+<https://user.cscs.ch/computing/compilation/easybuild/>`__ or `Spack
+<https://user.cscs.ch/computing/compilation/spack/>`__ to build your code and
+its dependencies.
+
+Piz Daint Job Scheduler
+=======================
+
+The Job Scheduler on Piz Daint is Slurm.
+In order to run your code you will need to get 1 or more compute nodes from
+the batch system.
+
+- For basic development, an interactive session can be started on the login
+  nodes of Piz Daint using ``salloc``. When you have been granted a set of
+  nodes/gpus, you then use the ``srun`` command to launch jobs on the compute
+  nodes,
+- For non interactive jobs, you can use the ``sbatch`` command. The mentors
+  will help you generate batch submission scripts.
+
+The flags that you pass to ``srun`` differ depending upon whether you are
+running MPI or OpenMP parallel applications.
+
+When you have finished your session, you should exit the by typing `exit` so
+that your processors are returned back to the pool.
+
+Before the hackathon, you will have to compete with other jobs running on the
+system in the normal queue:
+
+   .. note:: 
+      salloc -Ahck -Cgpu -N 1 --time=01:00:00
+
+You can also use the ``debug`` queue for quicker response times, but your jobs
+must be limited to a single node only and have a time limit of 30 minutes.
+
+   .. note:: 
+      salloc -Ahck -Cgpu -N 1 --partition=debug
+
 TODO
 ----
 
-| For OpenACC programming we suggest using the PGI compiler.
-| The Cray CCE supports only up to OpenACC 2.0 and for Fortran only.
-| The GCC compiler that is provided does not have support for OpenACC.
-| If you want to use OpenMP 4.5 for accelerators, you should consider using the Cray compiler.
+- For OpenACC programming we suggest using the PGI compiler.
+- The Cray CCE supports only up to OpenACC 2.0 and for Fortran only.
+- The GCC compiler that is provided does not have support for OpenACC.
+- If you want to use OpenMP 4.5 for accelerators, you should consider using the Cray compiler.
 
 

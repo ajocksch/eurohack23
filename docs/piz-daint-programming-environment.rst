@@ -5,8 +5,8 @@ CSCS Supercomputer
 To get your password for the account, please contact Andreas Jocksch on 
 `Slack <https://cscsgpuhackathon2022.slack.com>`_.
 
-Accessing CSCS systems
-======================
+Accessing Piz Daint
+===================
 
 Step 1: Ela
 ------------
@@ -14,7 +14,7 @@ Step 1: Ela
 In order to gain access to CSCS systems you need to first access our front-end
 machine Ela which is accessible as `ela.cscs.ch`.
 
-   .. note::
+   .. code-block::
 
       ssh -Y hckXX@ela.cscs.ch
 
@@ -35,20 +35,18 @@ and a set of front-end nodes which you would typically use for compilation,
 batch job submission, file transfers and performance tools. The front end nodes
 are accessible as daint.cscs.ch and you can access these as:
 
-   .. note::
+   .. code-block::
 
       ssh -Y daint
 
 It is also possible to jump over ela with:
 
-   .. note::
+   .. code-block::
+
       ssh -Y -J hckXX@ela.cscs.ch daint.cscs.ch
 
-Piz Daint Programming Environment
-=================================
-
 Piz Daint filesystems
----------------------
+=====================
 
 Having logged in to Daint, you will have access to two file systems:
 
@@ -62,6 +60,8 @@ Having logged in to Daint, you will have access to two file systems:
 More information about the filesystems can be found on our 
 `user portal <https://user.cscs.ch/storage/file_systems/>`_.
 
+Piz Daint Programming Environment
+=================================
 
 Cray/HPE Programming Environment
 --------------------------------
@@ -71,41 +71,37 @@ The ``module`` command can be used to change the user environment:
 
 - To list the currently loaded module files, run:
 
-   .. note:: 
+   .. code-block:: 
+
       module list
 
 - To list the module files that can be loaded, run:
 
-   .. note:: 
+   .. code-block:: 
+
       module avail
 
 - To get a simple description about what a module provides, run:
 
-   .. note:: 
+   .. code-block:: 
+
       module help <modulename>
 
 - To load another programming environment or another version of a modulefile, 
   run (for example):
 
-   .. note:: 
-      module swap PrgEnv-cray PrgEnv-gnu
+   .. code-block:: 
 
+      module swap PrgEnv-cray PrgEnv-gnu
       module load gcc/11.2.0
+      or:
+      module load cdt-cuda/22.05
 
 More information about the programming environment can be found on our 
 `user portal <https://user.cscs.ch/computing/compilation/>`__.
 
-CSCS Software Stack
--------------------
-
-On top of the Cray/HPE Programming Environment, CSCS provides an HPC software
-stack optimized for Daint. To load this software stack, run:
-
-   .. note:: 
-      module load daint-gpu; module avail
-
 Available compilers
--------------------
+```````````````````
 
 In order to compile your code on Piz Daint, you will need to select a
 programming environment for a specific compiler. Available compilers on Daint
@@ -129,6 +125,7 @@ To get the version of the compiler used by the wrapper, run
 ``CC --version -craype-verbose``:
 
    .. note:: 
+
       - PrgEnv-Cray: ``clang++ -march=haswell # Cray clang version 14.0.0``
       - PrgEnv-gnu: ``g++ -march=core-avx2 # g++ (GCC) 11.2.0``
       - PrgEnv-nvidia: ``nvc++ -tp=haswell # nvc++ 21.3-0 LLVM``
@@ -139,42 +136,67 @@ To get the version of the compiler used by the wrapper, run
 
 - To compile a single file (fortran, c or c++) MPI code, run:
 
-   .. note:: 
-      - ftn -O2 mpi.f90 -o myexe
-      - cc -O2 mpi.c -o myexe
-      - CC -O2 mpi.cpp -o myexe
+   .. code-block:: 
+
+      ftn -O2 mpi.f90 -o myexe
+      cc -O2 mpi.c -o myexe
+      CC -O2 mpi.cpp -o myexe
 
 - For more information about the compilers, please check our user portal:
 
    .. note:: 
+
       - PrgEnv-Cray: https://user.cscs.ch/computing/compilation/cray
       - PrgEnv-gnu: https://user.cscs.ch/computing/compilation/gnu/
       - PrgEnv-nvidia: https://user.cscs.ch/computing/compilation/nvidia/
       - PrgEnv-intel: https://user.cscs.ch/computing/compilation/intel/
 
+CSCS Software Stack
+-------------------
+
+On top of the Cray/HPE Programming Environment, CSCS provides an HPC software
+stack optimized for Daint. To load this software stack, run:
+
+   .. code-block:: 
+
+      module load daint-gpu
+      module avail
+
+Building your code with EasyBuild or Spack
+------------------------------------------
+
+It is possible to use either `EasyBuild
+<https://user.cscs.ch/computing/compilation/easybuild/>`__ or `Spack
+<https://user.cscs.ch/computing/compilation/spack/>`__ to build more codes and
+dependencies.
 
 Piz Daint GPU
--------------
+=============
 
 Each compute node of Piz Daint has 1 NVIDIA Pascal ``P100`` gpu:
 
 - To compile cuda codes on Piz Daint, run:
 
-   .. note:: 
-      module load craype-accel-nvidia60; 
-      nvcc \-\-version
+   .. code-block:: 
 
-It will load the default nvcc compiler (cudatoolkit/11.0.2) and Cray library for
-gpu (cray-libsci_acc/20.10.1). If you need a more recent version, run instead:
+      module load craype-accel-nvidia60
+      nvcc --version
 
-   .. note:: 
-      module load nvhpc-nompi/22.2; 
-      nvcc \-\-version
+It will load the default nvcc compiler (**cudatoolkit/11.0.2**) and default Cray
+library for gpu (**cray-libsci_acc/20.10.1**). If you need a more recent version,
+run instead:
 
-If you need another version, please contact ``@jg`` on Slack.
+   .. code-block:: 
+
+      module load nvhpc-nompi/22.2
+      nvcc --version
+
+It will load nvcc version **11.6.55**. If you need another version, please
+contact ``@jg`` on Slack.
 
 NVIDIA Pascal P100
-``````````````````
+------------------
+
 For comparison, this table shows some performance metrics between the P100 on
 Piz Daint compute nodes and 2 more recent NVIDIA gpus:
 
@@ -208,13 +230,6 @@ and some details about the GPU configuration:
    *GPU*                    x       x       x   P100-PCIE
    ================  ========  ======  ======  ==========
 
-Building your code with EasyBuild or Spack
-------------------------------------------
-
-It is possible to use either `EasyBuild
-<https://user.cscs.ch/computing/compilation/easybuild/>`__ or `Spack
-<https://user.cscs.ch/computing/compilation/spack/>`__ to build your code and
-its dependencies.
 
 Piz Daint Job Scheduler
 =======================
@@ -239,21 +254,22 @@ that your processors are returned back to the pool.
 Before the hackathon, you will have to compete with other jobs running on the
 system in the normal queue:
 
-   .. note:: 
+   .. code-block:: 
+
       salloc -Ahck -Cgpu -N 1 --time=01:00:00
 
 You can also use the ``debug`` queue for quicker response times, but your jobs
 must be limited to a single node only and have a time limit of 30 minutes.
 
-   .. note:: 
+   .. code-block:: 
+
       salloc -Ahck -Cgpu -N 1 --partition=debug
 
 TODO
-----
+====
 
 - For OpenACC programming we suggest using the PGI compiler.
 - The Cray CCE supports only up to OpenACC 2.0 and for Fortran only.
 - The GCC compiler that is provided does not have support for OpenACC.
 - If you want to use OpenMP 4.5 for accelerators, you should consider using the Cray compiler.
-
 

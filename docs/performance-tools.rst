@@ -73,11 +73,20 @@ overhead. You can also deactivate cpu reporting with ``'--sample=none'``.
 Open a report file with nsys on your laptop
 -------------------------------------------
 
-A succesfull completed job on Piz Daint will create 1 or more ***.qdrep** report
+A succesfull completed job on Piz Daint will create 1 or more ***.nsys-rep** report
 file(s). Transfer the files to your laptop with scp and open them with the
 installed client.
 
 .. ![nsys on Piz Daint](img/nsys.png)
 
-.. cmake -DCMAKE_CXX_COMPILER=CC -DCMAKE_C_COMPILER=cc -S SPH-EXA.git -B build -DBUILD_TESTING=OFF -DBUILD_ANALYTICAL=OFF -- The CXX compiler identification is GNU 11.2.0
+.. cmake -DCMAKE_CXX_COMPILER=CC -DCMAKE_C_COMPILER=cc -S SPH-EXA.git -B build -DBUILD_TESTING=OFF -DBUILD_ANALYTICAL=OFF -DCMAKE_CUDA_FLAGS=-arch=sm_60
    cmake --build build -t sphexa-cuda -j
+   srun -n1 -t1 -A `id -gn` -Cgpu build/main/src/sphexa/sphexa-cuda --init sedov -s 1 -n 30
+
+.. image:: _static/img/nsys.png
+  :align: center
+  :width: 600
+  :alt: nsys
+
+
+

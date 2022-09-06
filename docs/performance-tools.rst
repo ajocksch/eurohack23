@@ -88,5 +88,3 @@ installed client.
   :width: 600
   :alt: nsys
 
-
-

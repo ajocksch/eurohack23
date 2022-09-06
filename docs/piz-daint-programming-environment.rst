@@ -191,8 +191,19 @@ run instead:
       module load nvhpc-nompi/22.2
       nvcc --version
 
-It will load nvcc version **11.6.55**. If you need another version, please
-contact ``@jg`` on Slack.
+It will load nvcc version **11.6.55** (and nvc compilers version 22.2 too).
+
+To load the latest cuda version, run:
+
+   .. code-block:: 
+
+      module use /apps/daint/UES/hackaton/modules/all
+      module load CUDAcore/11.7.1
+      nvcc --version
+
+It will load nvcc version **11.7.99**.
+
+If you need another version, please contact ``@jg`` on Slack.
 
 NVIDIA Pascal P100
 ------------------

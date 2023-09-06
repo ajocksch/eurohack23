@@ -20,10 +20,7 @@ machine Ela which is accessible as `ela.cscs.ch`.
 
 - If you do not have an username, you will be given a temporary username with a
   username of the form `hckXX` (for some number `XX`) and a password.
-- If you already have an username on Piz Daint, you can use it during the
-  hackathon week.
-
-The password can be changed on Ela using the `kpasswd` command.
+  The password can be changed on Ela using the `kpasswd` command.
 
 Step 2: Piz Daint
 ------------------

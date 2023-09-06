@@ -1,2 +1,2 @@
-# eurohack22
-CSCS GPU hackathon Eurohack 2022
+This is CSCS repo for the GPU EuroHack23 High Performance Computing
+Applications Programming Hackathon.

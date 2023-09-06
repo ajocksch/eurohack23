@@ -2,8 +2,8 @@
 CSCS Supercomputer
 ==================
 
-To get your password for the account, please contact Andreas Jocksch on 
-`Slack <https://cscsgpuhackathon2022.slack.com>`_.
+To get your password for the account, please contact `Andreas Jocksch
+<https://cscshackathon.slack.com/team/U05QMMKLZ0W>`_ on Slack. 
 
 Accessing Piz Daint
 ===================
@@ -19,12 +19,8 @@ machine Ela which is accessible as `ela.cscs.ch`.
       ssh -Y hckXX@ela.cscs.ch
 
 - If you do not have an username, you will be given a temporary username with a
-  username of the form `hckXX` (for some number `XX`) and a password. The account
-  is `valid until XXX`.
-- If you already have an username on Piz Daint, you can use it during the
-  hackathon week.
-
-The password can be changed on Ela using the `kpasswd` command.
+  username of the form `hckXX` (for some number `XX`) and a password.
+  The password can be changed on Ela using the `kpasswd` command.
 
 Step 2: Piz Daint
 ------------------
@@ -94,8 +90,6 @@ The ``module`` command can be used to change the user environment:
 
       module swap PrgEnv-cray PrgEnv-gnu
       module load gcc/11.2.0
-      or:
-      module load cdt-cuda/22.05
 
 More information about the programming environment can be found on our 
 `user portal <https://user.cscs.ch/computing/compilation/>`__.
@@ -122,17 +116,10 @@ libraries that you have loaded with the module command:
 - The wrapper command for C codes is ``cc``
 
 To get the version of the compiler used by the wrapper, run
-``CC --version -craype-verbose``:
+``CC --version -craype-verbose``.
 
-   .. note:: 
-
-      - PrgEnv-Cray: ``clang++ -march=haswell # Cray clang version 14.0.0``
-      - PrgEnv-gnu: ``g++ -march=core-avx2 # g++ (GCC) 11.2.0``
-      - PrgEnv-nvidia: ``nvc++ -tp=haswell # nvc++ 21.3-0 LLVM``
-      - PrgEnv-intel: ``icpx -xCORE-AVX2 # Intel(R) oneAPI DPC++/C++ Compiler 2021.3.0``
-
-    .. warning::
-       The wrappers (ftn, cc or CC) are mandatory to compile MPI codes: there are no `mpicc` and the likes.
+   .. warning::
+      The wrappers (ftn, cc or CC) are mandatory to compile MPI codes: there are no `mpicc` and the likes.
 
 - To compile a single file (fortran, c or c++) MPI code, run:
 
@@ -170,12 +157,12 @@ It is possible to use either `EasyBuild
 <https://user.cscs.ch/computing/compilation/spack/>`__ to build more codes and
 dependencies.
 
-Piz Daint GPU
-=============
+Piz Daint GPU specs
+===================
 
 Each compute node of Piz Daint has 1 NVIDIA Pascal ``P100`` gpu:
 
-- To compile cuda codes on Piz Daint, run:
+- To compile cuda codes on Piz Daint using the default versions, run:
 
    .. code-block:: 
 
@@ -184,26 +171,9 @@ Each compute node of Piz Daint has 1 NVIDIA Pascal ``P100`` gpu:
 
 It will load the default nvcc compiler (**cudatoolkit/11.0.2**) and default Cray
 library for gpu (**cray-libsci_acc/20.10.1**). If you need a more recent version,
-run instead:
+use `/opt/nvidia/hpc_sdk/Linux_x86_64/` or `/apps/daint/UES/hackaton/software/CUDAcore/11.8.0/` 
 
-   .. code-block:: 
-
-      module load nvhpc-nompi/22.2
-      nvcc --version
-
-It will load nvcc version **11.6.55** (and nvc compilers version 22.2 too).
-
-To load the latest cuda version, run:
-
-   .. code-block:: 
-
-      module use /apps/daint/UES/hackaton/modules/all
-      module load CUDAcore/11.7.1
-      nvcc --version
-
-It will load nvcc version **11.7.99**.
-
-If you need another version, please contact ``@jg`` on Slack.
+If you need another version, please contact ``#cluster-support-pizdaint`` on Slack.
 
 NVIDIA Pascal P100
 ------------------
@@ -276,11 +246,11 @@ must be limited to a single node only and have a time limit of 30 minutes.
 
       salloc -Ahck -Cgpu -N 1 --partition=debug
 
-TODO
-====
+OpenACC
+=======
 
-- For OpenACC programming we suggest using the PGI compiler.
-- The Cray CCE supports only up to OpenACC 2.0 and for Fortran only.
-- The GCC compiler that is provided does not have support for OpenACC.
+- The Cray CCE compiler supports only supports Fortran (up to OpenACC 2.0).
+- The Nvidia compiler supports OpenACC.
+- The GCC compiler available on Piz Daint do not have support for OpenACC.
 - If you want to use OpenMP 4.5 for accelerators, you should consider using the Cray compiler.
 
